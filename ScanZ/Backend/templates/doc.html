@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScanZ | Document Verification</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% load static %}
+    <style>
+        /* Background container for the image */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("{% static 'images/home2.jpg' %}");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+            z-index: -1; /* Keep background behind content */
+        }
+
+        /* Overlay to reduce opacity */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(18, 17, 17, 0.6); /* Adjust opacity */
+        }
+
+        /* Ensure content is above the background */
+        .content {
+            position: relative;
+            z-index: 1; /* Keep content above the background and overlay */
+        }
+
+        /* Header with semi-transparent background */
+        header {
+            background-color: rgba(249, 202, 202, 0.7); /* Semi-transparent */
+            color: rgb(237, 229, 229);
+            padding: 0.3rem; /* Reduce padding to decrease height */
+            text-align: center;
+            font-family: 'Papyrus', fantasy; 
+            font-size: 24px;
+            font-weight: bold;
+            width: 95%; /* Control width */
+            margin: 0 auto; /* Center the header */
+            border-radius: 10px; /* Optional: add rounded corners */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white; /* White text */
+            font-family: 'Courier', monospace; /* Changed font-family */
+        }
+
+        .upload-section {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .upload-field {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1); /* Light transparent background */
+            border-radius: 10px;
+            border: 2px solid white;
+            width: 300px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .upload-field i {
+            color: white;
+            font-size: 2rem;
+            margin-right: 10px;
+        }
+
+        .upload-field input[type="file"] {
+            padding: 10px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            background-color: transparent;
+            position: absolute;
+            top: 0;
+            left: 50px;
+            width: 200px;
+            height: 100%;
+            opacity: 0; /* Make input invisible but clickable */
+        }
+
+        .upload-btn {
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .upload-btn:hover {
+            background-color: #45a049;
+        }
+
+        .results {
+            margin-top: 2rem;
+            padding: 2rem;
+            border: 1px solid #ccc;
+            background-color: white;
+            display: none;
+        }
+
+        .progress-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 10px solid #ddd;
+            border-top: 10px solid #4CAF50;
+            position: relative;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+            transform: rotate(0deg); /* Initial rotation */
+        }
+
+        .progress-circle span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            color: black;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* New CAPTCHA Design */
+        .captcha-container {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .captcha-box {
+            font-size: 2rem;
+            letter-spacing: 5px;
+            background-color: #444;
+            color: white;
+            padding: 15px;
+            display: inline-block;
+            border: 3px dashed #4CAF50;
+            border-radius: 8px;
+        }
+
+        .captcha-input {
+            margin-top: 15px;
+            padding: 12px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            border: 2px solid #4CAF50;
+            width: 200px;
+            background-color: transparent;
+            color: white;
+        }
+
+        .upload-icon-box {
+            background-color: #333;
+            padding: 10px;
+            border-radius: 50%;
+        }
+
+        /* Text next to upload icon */
+        .upload-text {
+            margin-left: 15px;
+            font-size: 1.2rem;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="overlay"></div>
+    </div>
+
+<header>
+    <h1>ScanZ.ai</h1>
+    <p>Boost your Document Verification</p>
+</header>
+
+<div class="container">
+    <div class="hero">
+        <h1 style="color:rgb(254, 185, 185);">AI that elevates your Documents</h1>
+    </div>
+
+    <div class="upload-section">
+        <h2 style="font-family: 'Courier', monospace; color: rgb(228, 203, 203);">Upload Your Document here</h2>
+        <form id="uploadForm" enctype="multipart/form-data" method="POST" action="{% url 'process_document' %}">
+            <!-- Django's CSRF protection, do not delete the token -->
+           {% csrf_token %}   
+        <div class="upload-field">
+            <div class="upload-icon-box">
+                <i class="fas fa-upload"></i>
+            </div>
+            <span class="upload-text" id="uploadText">choose file</span>
+            <input type="file" id="documentInput" onchange="showUploadStatus()" name="document" required>
+        </div>
+        <br>
+        <button type="submit" class="upload-btn" id="verifyBtn" style="display: none;" onclick="generateCaptcha()">Verify Document</button>
+        </form><br>
+        <div id="uploadStatus"></div> <!-- Upload status area -->
+
+        <!-- CAPTCHA section -->
+        <div class="captcha-container" id="captchaSection" style="display: none;">
+            <div class="captcha-box" id="captchaBox"></div>
+            <input type="text" class="captcha-input" id="captchaInput" placeholder="Enter CAPTCHA">
+            <button class="upload-btn" onclick="submitCaptcha()">Submit</button>
+        </div>
+
+        <!-- Circular progress loader -->
+        <div class="progress-circle" id="progressCircle" style="display: none;">
+            <span id="progressPercent">0%</span> <!-- Percentage display -->
+        </div>
+
+        {% if summary %}
+        <div class="results" id="results">
+            <h2>Verification Results</h2>
+            <p id="resultsContent"></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function generateCaptcha() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let captcha = '';
+        for (let i = 0; i < 6; i++) {
+            captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        document.getElementById('captchaBox').textContent = captcha;
+        document.getElementById('captchaInput').value = ''; // Clear CAPTCHA input
+        document.getElementById('captchaSection').style.display = 'block';
+    }
+
+    function submitCaptcha() {
+        const captchaInput = document.getElementById('captchaInput').value;
+        const captchaBox = document.getElementById('captchaBox').textContent;
+        const progressCircle = document.getElementById('progressCircle');
+        const resultsContent = document.getElementById('resultsContent');
+        const progressPercent = document.getElementById('progressPercent');
+
+        if (captchaInput !== captchaBox) {
+            alert('Invalid CAPTCHA. Please try again.');
+            document.getElementById('captchaInput').value = ''; // Clear incorrect CAPTCHA input
+            generateCaptcha();
+        } else {
+            progressCircle.style.display = 'block'; // Show the progress loader
+            resultsContent.textContent = 'Verifying your document...'; 
+            document.getElementById('results').style.display = 'block'; // Show result container
+
+            let percentage = 0;
+            const interval = setInterval(() => {
+                percentage += 2; // Increase percentage in smaller steps for smoother transition
+                progressPercent.textContent = percentage + '%'; // Update displayed percentage
+                
+                // Rotate the circle to simulate progress
+                progressCircle.style.transform = `rotate(${percentage * 3.6}deg)`;
+
+                if (percentage >= 100) {
+                    clearInterval(interval); // Stop interval when 100% is reached
+                    progressCircle.style.display = 'none'; // Hide the loader after complete
+                    resultsContent.textContent = 'Your document has been verified successfully!';
+                }
+            }, 50); // Increase the percentage every 50ms
+        }
+    }
+
+    function showUploadStatus() {
+        const input = document.getElementById('documentInput');
+        const uploadText = document.getElementById('uploadText');
+        const uploadStatus = document.getElementById('uploadStatus');
+
+        if (input.files.length > 0) {
+            uploadText.textContent = input.files[0].name;
+            uploadStatus.textContent = 'File ready for verification!';
+            document.getElementById('verifyBtn').style.display = 'inline-block';
+        } else {
+            uploadText.textContent = 'Upload here or choose file';
+            uploadStatus.textContent = '';
+            document.getElementById('verifyBtn').style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>

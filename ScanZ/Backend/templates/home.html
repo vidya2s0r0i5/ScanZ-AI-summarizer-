@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScanZ.ai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&display=swap" rel="stylesheet">
+    {% load static %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            background-image: url("{% static 'images/home2.jpg' %}"); /* Your background image */
+            background-size: 100% 100%; /* Ensures the image covers the whole screen */
+            background-position: center; /* Centers the image */
+            background-repeat: no-repeat; 
+            background-attachment: fixed; /* Prevents tiling the image */
+            color:black;
+            backdrop-filter: blur(4px); /* Apply blur to the background image */
+            opacity: 0.8; /* Adjust the opacity for transparency */
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column; /* Arrange items in a column */
+            align-items: center; /* Center items horizontally */
+            justify-content: center; /* Center items vertically */
+            padding: 50px;
+            border-radius: 10px; /* Rounded corners */
+            background-color: rgba(255, 255, 255, 0); /* Semi-transparent background */
+            box-shadow: none; /* Remove the shadow for no depth */
+            max-width: 900px; /* Optional: limit width */
+            text-align: center; /* Center text */
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        img {
+            width: 100px; /* Adjust the size of the logo */
+            height: 100px; /* Ensure the height is the same as width for a circular effect */
+            border-radius: 50%; /* Makes the image circular */
+            margin-right: 20px;
+            object-fit: cover; /* Ensures the image covers the circular area without distortion */
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .button {
+            display: inline-block; /* Ensures it behaves like a button */
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #04090e;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none; /* Removes underline */
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #19741f;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: #333;
+            color: white;
+            position: absolute;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <img src="{% static 'images/logo.jpg' %}" alt="Logo"> <!-- Replace with your logo URL -->
+            <div class="container">
+                <h1 style="font-family: 'Creepster', cursive;
+
+ font-size: 70px;font-weight: bold;">Welcome to ScanZ.ai</h1>
+                <p style="font-family: 'Papyrus', fantasy; font-size:28px; font-weight: bold;">
+                    <b style="font-size:33px; font-weight:bolder;">Bring your document verification to the next generation.</b><br>
+                    focused on accurate, thoughtful document integrity maintenance, authenticity validation, and inconsistency detection.
+                </p>
+            </div>
+        </div>
+    </header>
+        <a href="{% url 'render_form' %}" class="button">Start with ScanZ</a> <!-- Replace 'your-target-page.html' with the actual page you want to navigate to -->
+
+</body>
+</html>
